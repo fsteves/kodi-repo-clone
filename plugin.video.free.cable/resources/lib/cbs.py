@@ -60,9 +60,10 @@ def rootlist():
     menu=tree.find(attrs={'id' : 'daypart_nav'})
     categories=menu.findAll('a')
     for item in categories:
-        catid = item['onclick'].replace("showDaypart('",'').replace("');",'')
-        name = catid.title()
-        common.addDirectory(name, 'cbs', 'shows', catid)
+        if item['href'].find('javascript') == 0:
+            catid = item['onclick'].replace("showDaypart('",'').replace("');",'')
+            name = catid.title()
+            common.addDirectory(name, 'cbs', 'shows', catid)
     common.setView('seasons')
 
 def shows(catid = common.args.url):
