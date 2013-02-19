@@ -81,7 +81,8 @@ def showroot(url = common.args.url):
             mode = 'showsubClips'
         for link in set.findAll('a'):
             name = link.string.strip()
-            url = BASE+link['href'].split('?')[0]+'?view=detail'
+            #url = BASE+link['href'].split('?')[0]+'?view=detail'
+            url = url[0:url.rfind('/')]+link['href'].split('?')[0]+'?view=detail'
             common.addDirectory(name, 'nbc', mode, url)
     common.setView('seasons')
 
@@ -166,7 +167,7 @@ def play():
     hbitrate = -1
     sbitrate = int(common.settings['quality']) * 1024
     for item in items:
-        bitrate = int(item['system-bitrate'])
+        bitrate = int(float(filename['bitrate']))
         if bitrate > hbitrate and bitrate <= sbitrate:
             hbitrate = bitrate
             playpath = item['src']

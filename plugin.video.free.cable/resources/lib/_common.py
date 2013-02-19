@@ -24,12 +24,13 @@ pluginhandle = int (sys.argv[1])
 """
 
 class _Info:
-    def __init__( self, *args, **kwargs ):
-        print "common.args"
-        print kwargs
-        self.__dict__.update( kwargs )
+    def __init__(self, s):
+        args = urllib.unquote_plus(s).split('&')
+        for x in args:
+            (k,v) = x.split('=', 1)
+            setattr(self, k, v.strip('"\''))
 
-exec '''args = _Info(%s)''' % (urllib.unquote_plus(sys.argv[2][1:].replace("&", ", ").replace("'","\'").replace('%5C', '%5C%5C')).replace('%A9',u'\xae').replace('%E9',u'\xe9').replace('%99',u'\u2122') , )
+args = _Info(sys.argv[2][1:])
 
 """
     DEFINE
@@ -259,6 +260,38 @@ def load_db():
     conn = sqlite.connect(db_file)
     c = conn.cursor()
     return c.execute('select * from shows order by series_title')
+
+def load_status():
+    conn = sqlite.connect(db_file)
+    c = conn.cursor()
+    return c.execute('select distinct status from shows order by status')
+
+def list_status():
+    for status in load_status():
+        if status[0] <> None:
+            addDirectory(status[0], 'common', 'list_days')
+                
+def load_days():
+    conn = sqlite.connect(db_file)
+    c = conn.cursor()
+    return c.execute('select distinct Airs_DayOfWeek from shows order by Airs_DayOfWeek')
+
+def list_days():
+    for day in load_days():
+        if day[0] <> None:
+            addDirectory(day[0], 'common', 'list_day',day[0])
+    xbmcplugin.endOfDirectory( pluginhandle )
+
+def load_day(day):
+    conn = sqlite.connect(db_file)
+    c = conn.cursor()
+    return c.execute('select distinct status from shows order by status')
+
+def list_day():
+    for status in load_day():
+        if status[0] <> None:
+            addDirectory(status[0], 'common', 'list_days')
+    xbmcplugin.endOfDirectory( pluginhandle )
 
 def load_showlist(favored=False):
     shows = load_db()
@@ -502,7 +535,7 @@ def setView(type='root'):
         view=int(addoncompat.get_setting(type+'view'))
         xbmc.executebuiltin("Container.SetViewMode("+str(confluence_views[view])+")")  
 
-def addVideo(u,displayname,thumb=False,fanart=False,infoLabels=False):
+def addVideo(u,displayname,thumb=False,fanart=False,infoLabels=False,HD=False):
     if not fanart:
         if args.__dict__.has_key('fanart'): fanart = args.fanart
         else: fanart = plugin_fanart
@@ -511,6 +544,15 @@ def addVideo(u,displayname,thumb=False,fanart=False,infoLabels=False):
         else: thumb = ''
     item=xbmcgui.ListItem(displayname, iconImage=thumb, thumbnailImage=thumb)
     item.setInfo( type="Video", infoLabels=infoLabels)
+
+    try:
+        if HD:
+            item.addStreamInfo('video', { 'codec': 'h264', 'width':1280 ,'height' : 720 })
+        else:
+            item.addStreamInfo('video', { 'codec': 'h264', 'width':720 ,'height' : 400 })
+        item.addStreamInfo('audio', { 'codec': 'aac', 'channels' : 2 })
+    except:pass
+
     item.setProperty('fanart_image',fanart)
     item.setProperty('IsPlayable', 'true')
     xbmcplugin.addDirectoryItem(pluginhandle,url=u,listitem=item,isFolder=False)
@@ -680,7 +722,7 @@ def getURL( url , values = None ,proxy = False, referer=False):
             req = urllib2.Request(url,data)
         if referer:
             req.add_header('Referer', referer)
-        req.add_header('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:13.0) Gecko/20100101 Firefox/13.0.1')
+        req.add_header('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:14.0) Gecko/20100101 Firefox/14.0.1')
         response = urllib2.urlopen(req)
         link=response.read()
         response.close()
@@ -714,7 +756,7 @@ def getRedirect( url , values = None ,proxy = False, referer=False):
             req = urllib2.Request(url,data)
         if referer:
             req.add_header('Referer', referer)
-        req.add_header('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:13.0) Gecko/20100101 Firefox/13.0.1')
+        req.add_header('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:14.0) Gecko/20100101 Firefox/14.0.1')
         response = urllib2.urlopen(req)
         finalurl=response.geturl()
         response.close()

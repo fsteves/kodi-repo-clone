@@ -182,7 +182,7 @@ def play(url=common.args.url):
     platpath=False
     for filename in filenames:
         if filename['src'] <> '':
-            bitrate = int(filename['bitrate'])
+            bitrate = int(float(filename['bitrate']))
             if bitrate > hbitrate and bitrate <= sbitrate:
                 hbitrate = bitrate
                 playpath = filename['src']
