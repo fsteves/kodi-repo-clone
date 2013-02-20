@@ -39,17 +39,21 @@ def rootlist(db=False):
         common.setView('tvshows')
 
 def episodes():
-    url = 'http://www.nick.com/ajax/videos/full-episode-videos'
-    url += '?sort=date+desc&start=0&viewType=videoContentList&rows=25&artist=&show='+common.args.url+'&f_type=&f_contenttype='
+    url = 'http://www.nick.com/ajax/all-videos-list/full-episode-videos'
+    url += '?orderBy=Date&start=0&rows=25&type=videoplaylist-segmented&tag='+common.args.url
+    #url = 'http://www.nick.com/ajax/videos/full-episode-videos'
+    #url += '?sort=date+desc&start=0&viewType=videoContentList&rows=25&artist=&show='+common.args.url+'&f_type=&f_contenttype='
     data = common.getURL(url)
     tree=BeautifulSoup(data, convertEntities=BeautifulSoup.HTML_ENTITIES)
     episodes=tree.findAll('article')
     for episode in episodes:
+        print episode.prettify()
         name = episode.find('p',attrs={'class':'short-title'}).string
         showname = episode.find('p',attrs={'class':'show-name'}).string
         plot = episode.find('p',attrs={'class':'description'}).string
         thumb = episode.find('img',attrs={'class':'thumbnail'})['src']
-        dataid = episode['data-id']
+        #dataid = episode['data-id']
+        #dataid = ''
         url = BASE + episode.find('a')['href']
         u = sys.argv[0]
         u += '?url="'+urllib.quote_plus(url)+'"'
@@ -66,7 +70,8 @@ def episodes():
     common.setView('episodes')
 
 def playuri(uri = common.args.url,referer='http://www.nick.com'):
-    mtvn = 'http://media.nick.com/'+uri 
+    #mtvn = 'http://media.nick.com/'+uri
+    mtvn = 'http://media.mtvnservices.com/fb/'+uri+'.swf'
     swfUrl = common.getRedirect(mtvn,referer=referer)
     configurl = urllib.unquote_plus(swfUrl.split('CONFIG_URL=')[1].split('&')[0]).strip()
     configxml = common.getURL(configurl,referer=mtvn)
@@ -96,7 +101,7 @@ def playuri(uri = common.args.url,referer='http://www.nick.com'):
 def playvideo(url = common.args.url):
     data=common.getURL(url)
     try:
-        uri = re.compile('<meta content="http://media.nick.com/(.+?)" itemprop="embedURL"/>').findall(data)[0]
+        uri = re.compile('<meta content="http://media.mtvnservices.com/fb/(.+?).swf" property="og:video"/>').findall(data)[0]
     except:
         uri=re.compile("NICK.unlock.uri = '(.+?)';").findall(data)[0]
     playuri(uri,referer=url)

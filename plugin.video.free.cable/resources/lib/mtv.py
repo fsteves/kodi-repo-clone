@@ -25,14 +25,14 @@ def rootlist(db=False):
     multishow = {}
     
     # Grab Current Shows
-    data = common.getURL('http://www.mtv.com/ontv/all/current.jhtml')
-    tree=BeautifulSoup(data, convertEntities=BeautifulSoup.HTML_ENTITIES)
-    shows,multishow = grabShowlist(tree,shows,multishow)
+    #data = common.getURL('http://www.mtv.com/ontv/all/index.jhtml')
+    #tree=BeautifulSoup(data, convertEntities=BeautifulSoup.HTML_ENTITIES)
+    #shows,multishow = grabShowlist(tree,shows,multishow)
 
     # Grab Current Shows MTV2
-    data = common.getURL('http://www.mtv.com/ontv/all/currentMtv2.jhtml')
-    tree=BeautifulSoup(data, convertEntities=BeautifulSoup.HTML_ENTITIES)
-    shows,multishow = grabShowlist(tree,shows,multishow)
+    #data = common.getURL('http://www.mtv.com/ontv/all/currentMtv2.jhtml')
+    #tree=BeautifulSoup(data, convertEntities=BeautifulSoup.HTML_ENTITIES)
+    #shows,multishow = grabShowlist(tree,shows,multishow)
      
     # Process Full Show List
     data = common.getURL(BASE_URL)
