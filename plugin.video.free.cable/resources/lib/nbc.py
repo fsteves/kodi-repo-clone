@@ -167,7 +167,7 @@ def play():
     hbitrate = -1
     sbitrate = int(common.settings['quality']) * 1024
     for item in items:
-        bitrate = int(float(filename['bitrate']))
+        bitrate = int(float(item['system-bitrate']))
         if bitrate > hbitrate and bitrate <= sbitrate:
             hbitrate = bitrate
             playpath = item['src']
