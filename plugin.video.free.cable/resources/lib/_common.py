@@ -24,7 +24,7 @@ pluginhandle = int (sys.argv[1])
 """
 class _Info:
     def __init__(self, s):
-        args = urllib.unquote_plus(s).split('&')
+        args = urllib.unquote_plus(s).split(' , ')
         for x in args:
             try:
                 (k,v) = x.split('=', 1)
@@ -32,15 +32,8 @@ class _Info:
             except:
                 pass
 
-args = _Info(sys.argv[2][1:])
+args = _Info(sys.argv[2][1:].replace("&", " , "))
 
-#class _Info:
-#    def __init__( self, *args, **kwargs ):
-#        print "common.args"
-#        print kwargs
-#        self.__dict__.update( kwargs )
-#
-#exec '''args = _Info(%s)''' % (urllib.unquote_plus(sys.argv[2][1:].replace("&", ", ").replace("'","\'").replace('%5C', '%5C%5C')).replace('%A9',u'\xae').replace('%E9',u'\xe9').replace('%99',u'\u2122') , )
 
 """
     DEFINE
